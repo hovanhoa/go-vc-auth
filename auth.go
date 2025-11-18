@@ -50,6 +50,17 @@ func extractAddressFromDID(did string) string {
 	return did[lastColonIndex+1:]
 }
 
+// CreateToken creates a new VP token with a list of VCs.
+// It returns the VP token as a JWT string.
+// Example:
+// ```
+// token, err := auth.CreateToken(context.Background(), []string{vcJwt1, vcJwt2}, "did:nda:testnet:0x8b3b1dee8e00cb95f8b2a1d1a9a7cb8fe7d490ce")
+// ```
+// @param ctx context.Context - The context for the request.
+// @param vcsJwt []string - The list of VCs as JWT strings.
+// @param holderDid string - The DID of the holder.
+// @return string - The VP token as a JWT string.
+// @return error - The error if the token creation fails.
 func (a *auth) CreateToken(ctx context.Context, vcsJwt []string, holderDid string) (string, error) {
 	vcs := make([]vc.Credential, len(vcsJwt))
 	for i, vcJwt := range vcsJwt {
@@ -108,6 +119,21 @@ func (a *auth) CreateToken(ctx context.Context, vcsJwt []string, holderDid strin
 
 }
 
+// VerifyToken verifies a VP token with a list of VCs.
+// It returns the list of VC claims.
+// Example:
+// ```
+// claims, err := auth.VerifyToken(context.Background(), token)
+//
+//	if err != nil {
+//		return nil, err
+//	}
+//
+// ```
+// @param ctx context.Context - The context for the request.
+// @param token string - The VP token as a JWT string.
+// @return []VcClaims - The list of VC claims.
+// @return error - The error if the token verification fails.
 func (a *auth) VerifyToken(ctx context.Context, token string) ([]VcClaims, error) {
 	vpPresentation, err := vp.ParseJWTPresentation(token, vp.WithVerifyProof(), vp.WithVCValidation())
 	if err != nil {

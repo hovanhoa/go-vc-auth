@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"github/hovanhoa/go-vc-auth/vault"
 )
 
@@ -45,5 +46,9 @@ func NewVaultProvider(address, token string, maxRetries ...int) *VaultProvider {
 // Sign implements the Provider interface.
 // It stores the private key in Vault (if not already stored), then signs the payload using Vault.
 func (v *VaultProvider) Sign(payload []byte, options *ProviderOption) ([]byte, error) {
+	if options.SignerAddress == "" {
+		return nil, fmt.Errorf("signer address is required")
+	}
+
 	return v.vault.SignMessage(context.Background(), payload, options.SignerAddress)
 }
