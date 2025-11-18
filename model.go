@@ -16,6 +16,6 @@ type PresentationContents struct {
 }
 
 type VcClaims struct {
-	Issuer  string     `json:"issuer"`
-	Subject vc.Subject `json:"CredentialSubject"`
+	Issuer  string                 `json:"issuer"`
+	Subject map[string]interface{} `json:"CredentialSubject"`
 }

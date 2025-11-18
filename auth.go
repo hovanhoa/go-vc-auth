@@ -155,10 +155,14 @@ func (a *auth) VerifyToken(ctx context.Context, token string) ([]VcClaims, error
 			return nil, err
 		}
 
-		// Parse credential contents to VC Claims
-		var vcClaims VcClaims
-		if err := json.Unmarshal(credContentsBytes, &vcClaims); err != nil {
+		var credContents map[string]interface{}
+		if err := json.Unmarshal(credContentsBytes, &credContents); err != nil {
 			return nil, err
+		}
+
+		vcClaims := VcClaims{
+			Issuer:  credContents["issuer"].(string),
+			Subject: credContents["credentialSubject"].(map[string]interface{}),
 		}
 
 		vcClaimsList = append(vcClaimsList, vcClaims)
