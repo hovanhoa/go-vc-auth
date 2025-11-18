@@ -2,10 +2,7 @@ module github/hovanhoa/go-vc-auth
 
 go 1.24.4
 
-require (
-	github.com/ipfs/fs-repo-migrations v1.7.1
-	github.com/pilacorp/go-credential-sdk v1.3.0
-)
+require github.com/pilacorp/go-credential-sdk v1.3.0
 
 require (
 	github.com/ProjectZKM/Ziren/crates/go-runtime/zkvm_runtime v0.0.0-20251001021608-1fe7b43fc4d6 // indirect

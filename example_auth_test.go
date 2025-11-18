@@ -5,23 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 	auth "github/hovanhoa/go-vc-auth"
+	"github/hovanhoa/go-vc-auth/provider"
 )
 
 // ExampleNewAuth demonstrates how to create a new Auth instance.
 func ExampleNewAuth() {
 	// Create a Vault provider for signing operations
-	provider := auth.NewVaultProvider("http://vault:8200", "your-vault-token", 3)
+	provider := provider.NewVaultProvider("https://vault-dev.pila.vn", "", 3)
 
 	// Create an Auth instance with the provider and DID URL
 	authInstance := auth.NewAuth(provider, "https://auth-dev.pila.vn/api/v1/did")
-
-	// Alternatively, use the convenience function to create Auth with default provider
-	authInstance = auth.NewAuthWithDefaultProvider(
-		"http://vault:8200",
-		"your-vault-token",
-		"https://auth-dev.pila.vn/api/v1/did",
-		3, // max retries
-	)
 
 	fmt.Printf("Auth instance created: %v\n", authInstance != nil)
 	// Output: Auth instance created: true
@@ -30,7 +23,7 @@ func ExampleNewAuth() {
 // ExampleAuth_CreateToken demonstrates how to create a VP token from Verifiable Credentials.
 func ExampleAuth_CreateToken() {
 	// Initialize Auth with provider
-	provider := auth.NewVaultProvider("http://vault:8200", "your-vault-token", 3)
+	provider := provider.NewVaultProvider("https://vault-dev.pila.vn", "", 3)
 	authInstance := auth.NewAuth(provider, "https://auth-dev.pila.vn/api/v1/did")
 
 	// Prepare VC JWT tokens (these are example tokens - replace with real ones)
@@ -56,7 +49,7 @@ func ExampleAuth_CreateToken() {
 // ExampleAuth_VerifyToken demonstrates how to verify a VP token and extract VC claims.
 func ExampleAuth_VerifyToken() {
 	// Initialize Auth with provider
-	provider := auth.NewVaultProvider("http://vault:8200", "your-vault-token", 3)
+	provider := provider.NewVaultProvider("https://vault-dev.pila.vn", "", 3)
 	authInstance := auth.NewAuth(provider, "https://auth-dev.pila.vn/api/v1/did")
 
 	// VP token to verify (this would typically come from a client request)
@@ -82,7 +75,7 @@ func ExampleAuth_VerifyToken() {
 // ExampleAuth_workflow demonstrates a complete workflow: creating and verifying a token.
 func ExampleAuth_workflow() {
 	// Step 1: Initialize Auth
-	provider := auth.NewVaultProvider("http://vault:8200", "your-vault-token", 3)
+	provider := provider.NewVaultProvider("https://vault-dev.pila.vn", "", 3)
 	authInstance := auth.NewAuth(provider, "https://auth-dev.pila.vn/api/v1/did")
 
 	// Step 2: Create a token from VCs
