@@ -9,10 +9,16 @@ import (
 // testProvider is a simple in-memory Provider implementation for tests.
 type testProvider struct{}
 
-func (p *testProvider) Sign(payload, privateKey []byte) ([]byte, error) {
+func (p *testProvider) Sign(payload []byte) ([]byte, error) {
 	// TODO: Implement the simple signing logic here
 	// Return the signed payload
 	return payload, nil
+}
+
+func (p *testProvider) Verify(payload, signature []byte) error {
+	// TODO: Implement the simple verification logic here
+	// Return the error if the verification fails
+	return nil
 }
 
 // TestNewAuth ensures NewAuth returns a non-nil Auth implementation.
