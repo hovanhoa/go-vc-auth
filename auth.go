@@ -2,8 +2,10 @@ package auth
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
+	"strings"
 
 	vcdto "github.com/pilacorp/go-credential-sdk/credential/common/dto"
 	"github.com/pilacorp/go-credential-sdk/credential/vc"
@@ -12,7 +14,7 @@ import (
 
 type Auth interface {
 	// CreateToken creates a new VP token with a list of VCs.
-	CreateToken(ctx context.Context, vpContents vp.PresentationContents) (string, error)
+	CreateToken(ctx context.Context, vcsJwt []string, holderDid string) (string, error)
 
 	// VerifyToken verifies a VP token with a list of VCs.
 	VerifyToken(ctx context.Context, token string) ([]VcClaims, error)
@@ -37,7 +39,34 @@ func NewAuthWithDefaultProvider(vaultAddress, vaultToken, didUrl string, maxRetr
 	return NewAuth(provider, didUrl)
 }
 
-func (a *auth) CreateToken(ctx context.Context, vpContents vp.PresentationContents) (string, error) {
+// extractAddressFromDID extracts the Ethereum address from a DID string.
+// It returns the substring after the last colon.
+// Example: "did:nda:testnet:0x8b3b1dee8e00cb95f8b2a1d1a9a7cb8fe7d490ce" -> "0x8b3b1dee8e00cb95f8b2a1d1a9a7cb8fe7d490ce"
+func extractAddressFromDID(did string) string {
+	lastColonIndex := strings.LastIndex(did, ":")
+	if lastColonIndex == -1 {
+		return did // Return original string if no colon found
+	}
+	return did[lastColonIndex+1:]
+}
+
+func (a *auth) CreateToken(ctx context.Context, vcsJwt []string, holderDid string) (string, error) {
+	vcs := make([]vc.Credential, len(vcsJwt))
+	for i, vcJwt := range vcsJwt {
+		vc, err := vc.ParseCredential([]byte(vcJwt))
+		if err != nil {
+			return "", err
+		}
+		vcs[i] = vc
+	}
+
+	vpContents := vp.PresentationContents{
+		Holder:                holderDid,
+		Types:                 []string{"VerifiablePresentation"},
+		VerifiableCredentials: vcs,
+		Context:               []interface{}{"https://www.w3.org/ns/credentials/v2", "https://www.w3.org/ns/credentials/examples/v2"},
+	}
+
 	vpPresentation, err := vp.NewJWTPresentation(vpContents)
 	if err != nil {
 		return "", err
@@ -48,7 +77,12 @@ func (a *auth) CreateToken(ctx context.Context, vpContents vp.PresentationConten
 		return "", err
 	}
 
-	signature, err := a.provider.Sign(signData)
+	hash := sha256.Sum256(signData)
+
+	signature, err := a.provider.Sign(hash[:], &ProviderOption{
+		SignerAddress: extractAddressFromDID(vpContents.Holder),
+	})
+
 	if err != nil {
 		return "", err
 	}
