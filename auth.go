@@ -15,7 +15,7 @@ import (
 
 type Auth interface {
 	// CreateToken creates a new VP token with a list of VCs.
-	CreateToken(ctx context.Context, vcsJwt []string, holderDid string, opts ...string) (string, error)
+	CreateToken(ctx context.Context, vcsJwt []string, holderDid string, opts ...any) (string, error)
 
 	// VerifyToken verifies a VP token with a list of VCs.
 	VerifyToken(ctx context.Context, token string) ([]VcClaims, error)
@@ -36,7 +36,7 @@ func NewAuth(p provider.Provider, didUrl string) Auth {
 }
 
 // CreateToken creates a new VP token with a list of VCs.
-func (a *auth) CreateToken(ctx context.Context, vcsJwt []string, holderDid string, opts ...string) (string, error) {
+func (a *auth) CreateToken(ctx context.Context, vcsJwt []string, holderDid string, opts ...any) (string, error) {
 	vcs := make([]vc.Credential, len(vcsJwt))
 	for i, vcJwt := range vcsJwt {
 		vc, err := vc.ParseCredential([]byte(vcJwt))

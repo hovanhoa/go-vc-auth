@@ -20,11 +20,11 @@ func NewVaultProvider(address, token string, maxRetries ...int) Provider {
 }
 
 // Sign signs the payload using Vault.
-func (v *vaultProvider) Sign(payload []byte, opts ...string) ([]byte, error) {
+func (v *vaultProvider) Sign(payload []byte, opts ...any) ([]byte, error) {
 	if len(opts) == 0 {
 		return nil, fmt.Errorf("signer address is required")
 	}
 
 	signerAddress := opts[0]
-	return v.vault.SignMessage(context.Background(), payload, signerAddress)
+	return v.vault.SignMessage(context.Background(), payload, signerAddress.(string))
 }

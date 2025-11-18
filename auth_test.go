@@ -12,7 +12,7 @@ import (
 
 // TestNewAuth ensures NewAuth returns a non-nil Auth implementation.
 func TestNewAuth(t *testing.T) {
-	provider := provider.NewVaultProvider("", "", 3)
+	provider := provider.NewVaultProvider("https://vault-dev.pila.vn", "hvs.Srt9DlDYPDWwsnUyuBYVBay2", 3)
 	a := auth.NewAuth(provider, "https://auth-dev.pila.vn/api/v1/did")
 	if a == nil {
 		t.Fatalf("expected non-nil Auth")
@@ -21,7 +21,7 @@ func TestNewAuth(t *testing.T) {
 
 // Test CreateToken ensures CreateToken returns a non-nil token.
 func TestCreateToken(t *testing.T) {
-	provider := provider.NewVaultProvider("", "", 3)
+	provider := provider.NewVaultProvider("https://vault-dev.pila.vn", "hvs.Srt9DlDYPDWwsnUyuBYVBay2", 3)
 	a := auth.NewAuth(provider, "https://auth-dev.pila.vn/api/v1/did")
 
 	vcJwts := []string{
