@@ -1,8 +1,6 @@
 package auth
 
-import (
-	"context"
-)
+import "context"
 
 type Auth interface {
 	// CreateToken creates a new VP token with a list of VCs.
@@ -12,15 +10,20 @@ type Auth interface {
 	VerifyToken(ctx context.Context, token string) ([]CredentialDocument, error)
 }
 
-type auth struct{}
+type auth struct {
+	provider Provider
+}
 
-func NewAuth() Auth {
-	return &auth{}
+func NewAuth(p Provider) Auth {
+	return &auth{
+		provider: p,
+	}
 }
 
 func (a *auth) CreateToken(ctx context.Context, vcs []CredentialDocument) (string, error) {
 	// TODO: Verify the list of VC documents
 	// Create a VP token with the list of VC documents
+	// Sign the VP token with the provider
 	// Return the VP token
 	return "", nil
 }
